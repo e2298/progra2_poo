@@ -1,9 +1,13 @@
 package rumm;
 
+import javafx.scene.control.Button;
+import javafx.scene.input.GestureEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
+
+import static java.lang.System.exit;
 
 public class Jugador {
     private ArrayList fichas;
@@ -26,19 +30,40 @@ public class Jugador {
         this.puntos = puntos;
     }
 
-    public Pane getSoporte() {
+    public GridPane getSoporte() {
         return soporte;
     }
 
-    public void setSoporte(Pane soporte) {
+    public void setSoporte(GridPane soporte) {
         this.soporte = soporte;
     }
 
     public Jugador(ArrayList fichas) {
-        setFichas(fichas);
-        GridPane nuevo = new GridPane();
+        setFichas(new ArrayList());
 
+        GridPane soporte = new GridPane();
+        setSoporte(soporte);
 
+        for(Object ficha: fichas){
+            anadirFicha((Ficha)ficha);
+        }
+    }
+
+    public void anadirFicha(Ficha ficha){
+        int indice;
+
+        getFichas().add(ficha);
+
+        indice = getSoporte().getChildren().indexOf(null);
+        if (indice == -1){
+            indice = getSoporte().getChildren().size();
+        }
+
+        getSoporte().add(ficha.getBoton(), indice, 0);
+
+    }
+
+    public void quitarFicha(){
 
     }
 }

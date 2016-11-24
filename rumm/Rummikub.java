@@ -7,9 +7,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.util.*;
@@ -23,7 +25,8 @@ public class Rummikub extends Application {
     private static ArrayList fichasTablero;
     private static int numeroJugadores;
     private static int numeroPartida;
-    private static Ficha seleccion;
+    public static int ancho, alto;
+    public static Button seleccion;
 
 
     public static Scene getEscenaPrincipal() {
@@ -74,18 +77,34 @@ public class Rummikub extends Application {
         Rummikub.numeroPartida = numeroPartida;
     }
 
-    public static Ficha getSeleccion() {
+    public static int getAncho() {
+        return ancho;
+    }
+
+    public static void setAncho(int ancho) {
+        Rummikub.ancho = ancho;
+    }
+
+    public static int getAlto() {
+        return alto;
+    }
+
+    public static void setAlto(int alto) {
+        Rummikub.alto = alto;
+    }
+
+    public static Button getSeleccion() {
         return seleccion;
     }
 
-    public static void setSeleccion(Ficha seleccion) {
+    public static void setSeleccion(Button seleccion) {
         Rummikub.seleccion = seleccion;
     }
 
     public static void main(String[] args) {
         numeroPartida = 0;
 
-        //launch(args);
+        launch(args);
 
     }
 
@@ -93,6 +112,9 @@ public class Rummikub extends Application {
     public void start(Stage primaryStage) {
         escenarioPrincipal = primaryStage;
         escenarioPrincipal.setTitle("Rmummikub");
+
+        setAncho((int) Screen.getPrimary().getVisualBounds().getWidth());
+        setAlto((int) Screen.getPrimary().getVisualBounds().getHeight());
 
         Pane layout = new Pane();
         Scene escena;
@@ -152,15 +174,6 @@ public class Rummikub extends Application {
     }
 
 
-    public static void inicializarPantalla(){
-        Pane layout = new Pane();
-
-
-
-        setEscenaPrincipal(new Scene(layout, 0, 0));
-        getEscenarioPrincipal().setScene(getEscenaPrincipal());
-        getEscenarioPrincipal().setFullScreen(true);
-    }
 
     public static void inicializarJuego(){
         ArrayList fichas;
@@ -191,15 +204,37 @@ public class Rummikub extends Application {
         jugadores = new Jugador[getNumeroJugadores()];
 
         for (int i = 0; i<getNumeroJugadores(); i++){
-            temp = fichas.subList(0,14);
+            temp = new ArrayList(fichas.subList(0,14));
             jugadores[i] = new Jugador(temp);
             fichas.removeAll(temp);
         }
 
         setFichasTablero(fichas);
+        setJugadores(jugadores);
 
         inicializarPantalla();
 
+    }
+
+
+    public static void inicializarPantalla(){
+        Pane layout = new Pane();
+        GridPane tablero;
+
+        Button botonSalir;
+
+        botonSalir= new Button("Salir");
+        botonSalir.setOnAction(e->{escenarioPrincipal.close();});
+        botonSalir.relocate(ancho-50,alto-3);
+        layout.getChildren().add(botonSalir);
+
+        layout.getChildren().add(getJugadores()[0].getSoporte());
+        getJugadores()[0].getSoporte().relocate(0,0);
+
+
+        setEscenaPrincipal(new Scene(layout, 0, 0));
+        getEscenarioPrincipal().setScene(getEscenaPrincipal());
+        getEscenarioPrincipal().setFullScreen(true);
     }
 
 
