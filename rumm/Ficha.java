@@ -41,19 +41,20 @@ public class Ficha {
         setColor(color);
         setNumero(numero);
 
-        if(num.length() < 2){
-            num += " ";
-        }
-
         if(numero == 0){
             num = "C ";
         }
 
-
         bt = new Button(num);
         bt.setTextFill(color);
-        bt.setStyle("-fx-font: 24 arial;");
+        bt.setStyle("-fx-font:"+ String.valueOf(Rummikub.getAlto()/40) +" arial;");
         bt.setUserData(this);
+
+        bt.setMinWidth(Rummikub.getAlto()/15);
+        bt.setMinHeight(Rummikub.getAlto()/15);
+        bt.setMaxWidth(Rummikub.getAlto()/15);
+        bt.setMinHeight(Rummikub.getAlto()/15);
+
         bt.setOnAction(event -> {
             Rummikub.setSeleccion(bt);
         });

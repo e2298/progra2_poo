@@ -24,10 +24,19 @@ public class Rummikub extends Application {
     private static Jugador[] jugadores;
     private static ArrayList fichasTablero;
     private static int numeroJugadores;
+    private static int turno;
     private static int numeroPartida;
-    public static int ancho, alto;
-    public static Button seleccion;
+    private static int ancho, alto;
+    private static Button seleccion;
 
+
+    public static int getTurno() {
+        return turno;
+    }
+
+    public static void setTurno(int turno) {
+        Rummikub.turno = turno;
+    }
 
     public static Scene getEscenaPrincipal() {
         return escenaPrincipal;
@@ -175,7 +184,7 @@ public class Rummikub extends Application {
 
 
 
-    public static void inicializarJuego(){
+    private static void inicializarJuego(){
         ArrayList fichas;
         ArrayList temp;
 
@@ -217,24 +226,46 @@ public class Rummikub extends Application {
     }
 
 
-    public static void inicializarPantalla(){
+    private static void inicializarPantalla(){
         Pane layout = new Pane();
         GridPane tablero;
 
         Button botonSalir;
+        Button botonTerminarTurno;
 
         botonSalir= new Button("Salir");
-        botonSalir.setOnAction(e->{escenarioPrincipal.close();});
-        botonSalir.relocate(ancho-50,alto-3);
+        botonSalir.setOnAction(e->{
+            new VentanaSalir();
+        });
+        botonSalir.relocate(1,alto-3);
         layout.getChildren().add(botonSalir);
 
-        layout.getChildren().add(getJugadores()[0].getSoporte());
-        getJugadores()[0].getSoporte().relocate(0,0);
-
+        botonTerminarTurno = new Button("Terminar turno");
+        botonTerminarTurno.setOnAction(event -> {
+            terminarTurno();
+        });
+        botonTerminarTurno.relocate(getAncho()-117,1);
+        layout.getChildren().add(botonTerminarTurno);
 
         setEscenaPrincipal(new Scene(layout, 0, 0));
         getEscenarioPrincipal().setScene(getEscenaPrincipal());
         getEscenarioPrincipal().setFullScreen(true);
+
+        iniciarSiguienteTurno();
+    }
+
+    private static void iniciarSiguienteTurno(){
+        setTurno((getTurno() + 1)%getNumeroJugadores());
+        ((Pane)getEscenaPrincipal().getRoot()).getChildren().add(getJugadores()[getTurno()].getSoporte());
+    }
+
+    private static void terminarTurno(){
+        AlertBox msj = new AlertBox("","Siguente turno");
+        msj.getBoton().setOnAction(event -> {
+            iniciarSiguienteTurno();
+            msj.cerrar();
+        });
+        ((Pane)getEscenaPrincipal().getRoot()).getChildren().remove(getJugadores()[getTurno()].getSoporte());
     }
 
 

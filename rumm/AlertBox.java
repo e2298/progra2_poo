@@ -31,7 +31,8 @@ public class AlertBox {
     public void cerrar(){
         ventana.close();
     }
-    
+
+
     public AlertBox(String title, String message) {
         Stage window = new Stage();
 
@@ -43,9 +44,11 @@ public class AlertBox {
         Label label = new Label();
         label.setText(message);
         
-        boton = new Button("Cerrar");
+        boton = new Button("Aceptar");
         boton.setOnAction(e-> cerrar());
-        
+
+        setBoton(boton);
+
         VBox layout = new VBox(10);
         layout.getChildren().addAll(label, boton);
         layout.setAlignment(Pos.CENTER);

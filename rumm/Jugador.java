@@ -4,10 +4,7 @@ import javafx.scene.control.Button;
 import javafx.scene.input.GestureEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-
 import java.util.ArrayList;
-
-import static java.lang.System.exit;
 
 public class Jugador {
     private ArrayList fichas;
@@ -60,10 +57,10 @@ public class Jugador {
         }
 
         getSoporte().add(ficha.getBoton(), indice, 0);
-
     }
 
-    public void quitarFicha(){
-
+    public void quitarFicha(Ficha ficha){
+        getFichas().remove(ficha);
+        getSoporte().getChildren().remove(ficha.getBoton());
     }
 }
