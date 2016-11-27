@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Jugador {
     private ArrayList fichas;
     private int puntos;
-    private GridPane soporte;
+
 
     public ArrayList getFichas() {
         return fichas;
@@ -27,19 +27,8 @@ public class Jugador {
         this.puntos = puntos;
     }
 
-    public GridPane getSoporte() {
-        return soporte;
-    }
-
-    public void setSoporte(GridPane soporte) {
-        this.soporte = soporte;
-    }
-
     public Jugador(ArrayList fichas) {
         setFichas(new ArrayList());
-
-        GridPane soporte = new GridPane();
-        setSoporte(soporte);
 
         for(Object ficha: fichas){
             anadirFicha((Ficha)ficha);
@@ -47,20 +36,10 @@ public class Jugador {
     }
 
     public void anadirFicha(Ficha ficha){
-        int indice;
-
         getFichas().add(ficha);
-
-        indice = getSoporte().getChildren().indexOf(null);
-        if (indice == -1){
-            indice = getSoporte().getChildren().size();
-        }
-
-        getSoporte().add(ficha.getBoton(), indice, 0);
     }
 
     public void quitarFicha(Ficha ficha){
         getFichas().remove(ficha);
-        getSoporte().getChildren().remove(ficha.getBoton());
     }
 }

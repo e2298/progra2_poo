@@ -1,22 +1,15 @@
 package rumm;
 
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 
-public class Ficha {
+public class Ficha  extends Button{
 
     //0 es comodin
     private int numero;
     private Color color;
-    private Button boton;
 
-    public Button getBoton() {
-        return boton;
-    }
-
-    public void setBoton(Button boton) {
-        this.boton = boton;
-    }
 
     public int getNumero() {
         return numero;
@@ -35,8 +28,9 @@ public class Ficha {
     }
 
     public Ficha(Color color, int numero){
+        super();
+
         String num = String.valueOf(numero);
-        final Button bt;
 
         setColor(color);
         setNumero(numero);
@@ -45,21 +39,19 @@ public class Ficha {
             num = "C ";
         }
 
-        bt = new Button(num);
-        bt.setTextFill(color);
-        bt.setStyle("-fx-font:"+ String.valueOf(Rummikub.getAlto()/40) +" arial;");
-        bt.setUserData(this);
+        setText(num);
 
-        bt.setMinWidth(Rummikub.getAlto()/15);
-        bt.setMinHeight(Rummikub.getAlto()/15);
-        bt.setMaxWidth(Rummikub.getAlto()/15);
-        bt.setMinHeight(Rummikub.getAlto()/15);
+        setTextFill(color);
+        setStyle("-fx-font:"+ String.valueOf(Rummikub.getAlto()/40) +" arial;");
 
-        bt.setOnAction(event -> {
-            Rummikub.setSeleccion(bt);
+        setMinWidth(Rummikub.getAlto()/15);
+        setMinHeight(Rummikub.getAlto()/15);
+        setMaxWidth(Rummikub.getAlto()/15);
+        setMinHeight(Rummikub.getAlto()/15);
+
+        setOnAction(event -> {
+            Rummikub.setSeleccion(this);
         });
-
-        setBoton(bt);
 
     }
 
