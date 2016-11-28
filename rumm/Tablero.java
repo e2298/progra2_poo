@@ -1,5 +1,6 @@
 package rumm;
 
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 
@@ -24,7 +25,6 @@ public class Tablero extends GridPane {
         tmp.setMinHeight(Rummikub.getAlto()/15);
         tmp.setMaxWidth(Rummikub.getAlto()/15);
         tmp.setMinHeight(Rummikub.getAlto()/15);
-        tmp.setUserData(new Coordenadas(fila, columna));
 
         tmp.setOnAction(event -> {
             moverCampo(tmp);
@@ -33,41 +33,75 @@ public class Tablero extends GridPane {
     }
 
     private void moverCampo(Button campo){
-        int columna = getColumnIndex(Rummikub.getSeleccion());
-        int fila = getRowIndex(Rummikub.getSeleccion());
+        if (Rummikub.getSeleccion()!= null) {
 
-        add(crearBotonVacio(columna, fila), columna, fila);
+            int columna = getColumnIndex(Rummikub.getSeleccion());
+            int fila = getRowIndex(Rummikub.getSeleccion());
 
-        getChildren().remove(Rummikub.getSeleccion());
-        add(Rummikub.getSeleccion(), ((Coordenadas)campo.getUserData()).getColumna(), ((Coordenadas)campo.getUserData()).getFila());
-        Rummikub.getSoporte().getChildren().remove(Rummikub.getSeleccion());
-        getChildren().remove(campo);
+            //si la ficha que se va a mover esta en el soporte
+            if (Rummikub.getSoporte().getChildren().contains(Rummikub.getSeleccion())) {
+                columna = Rummikub.getSoporte().getColumnIndex(Rummikub.getSeleccion());
+
+                Rummikub.getSoporte().getChildren().remove(Rummikub.getSeleccion());
+
+                //de soporte a tablero
+                if (getChildren().contains(campo)) {
+                    add(Rummikub.getSeleccion(), getColumnIndex(campo), getRowIndex(campo));
+                }
+                //de soporte a soporte
+                else{
+                    Rummikub.getSoporte().add(Rummikub.getSeleccion(), Rummikub.getSoporte().getColumnIndex(campo), 0);
+                    Rummikub.getSoporte().getChildren().remove(campo);
+                }
+                Rummikub.getSoporte().add(crearBotonVacio(columna, 0), columna, 0);
+            }
+            //si esta en el tablero
+            else {
+                getChildren().remove(Rummikub.getSeleccion());
+                //de tablero a tablero
+                if (getChildren().contains(campo)) {
+                    add(Rummikub.getSeleccion(), getColumnIndex(campo), getRowIndex(campo));
+                    add(crearBotonVacio(columna, fila), columna, fila);
+                }
+                //de tablero a soporte
+                else{
+                    add(crearBotonVacio(columna, fila), columna, fila);
+                    columna = Rummikub.getSoporte().getColumnIndex(campo);
+                    Rummikub.getSoporte().add(Rummikub.getSeleccion(), columna ,0);
+                    Rummikub.getSoporte().getChildren().remove(campo);
+                }
+            }
+
+            getChildren().remove(campo);
+        }
+        isValido();
     }
 
-    private class Coordenadas{
-        private int fila;
-        private int columna;
+    public Boolean isValido(){
+        int reps;
 
-        public int getFila() {
-            return fila;
+        Ficha tmp;
+        Ficha [][] tab = new Ficha[13][13];
+
+        for (Node n : getChildren()){
+            try{
+                //para que de excepcion si no es ficha
+                ((Ficha)n).getColor();
+                tab[getRowIndex(n)][getColumnIndex(n)] = (Ficha)n;
+            }
+            catch ( Exception e){
+            }
         }
 
-        public void setFila(int fila) {
-            this.fila = fila;
+        for (int fila = 0; fila<13; fila++){
+            for (int columna = 0; columna<13; columna++){
+                try{
+                }
+                catch (Exception e){
+                }
+            }
         }
-
-        public int getColumna() {
-            return columna;
-        }
-
-        public void setColumna(int columna) {
-            this.columna = columna;
-        }
-
-        public Coordenadas(int fila, int columna){
-            setColumna(columna);
-            setFila(fila);
-        }
+        return true;
     }
 
 }

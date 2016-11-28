@@ -279,6 +279,7 @@ public class Rummikub extends Application {
         });
 
         getSoporte().getChildren().clear();
+        setSeleccion(null);
     }
 
     private static void iniciarSiguienteTurno(){
