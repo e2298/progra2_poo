@@ -1,6 +1,7 @@
 package rumm;
 
 import javafx.application.Application;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -29,7 +30,16 @@ public class Rummikub extends Application {
     private static int ancho, alto;
     private static Ficha seleccion;
     private static  GridPane soporte;
+    private static Tablero tablero;
 
+
+    public static Tablero getTablero() {
+        return tablero;
+    }
+
+    public static void setTablero(Tablero tablero) {
+        Rummikub.tablero = tablero;
+    }
 
     public static GridPane getSoporte() {
         return soporte;
@@ -264,6 +274,8 @@ public class Rummikub extends Application {
         tab.relocate(0, getAlto()/14);
         layout.getChildren().add(tab);
 
+        setTablero(tab);
+
         setEscenaPrincipal(new Scene(layout, 0, 0));
         getEscenarioPrincipal().setScene(getEscenaPrincipal());
         getEscenarioPrincipal().setFullScreen(true);
@@ -272,14 +284,28 @@ public class Rummikub extends Application {
     }
 
     private static void terminarTurno() {
-        AlertBox msj = new AlertBox("", "Siguente turno");
-        msj.getBoton().setOnAction(event -> {
-            iniciarSiguienteTurno();
-            msj.cerrar();
-        });
+        AlertBox msj;
 
-        getSoporte().getChildren().clear();
-        setSeleccion(null);
+        if (getTablero().isValido()){
+            msj = new AlertBox("", "Siguente turno");
+            msj.getBoton().setOnAction(event -> {
+                iniciarSiguienteTurno();
+                msj.cerrar();
+            });
+
+            getJugadores()[getTurno()].getFichas().clear();
+            for (Node n: getSoporte().getChildren() ){
+                if (n instanceof Ficha){
+                    getJugadores()[getTurno()].getFichas().add(n);
+                }
+            }
+
+            getSoporte().getChildren().clear();
+            setSeleccion(null);
+        }
+        else{
+            msj = new AlertBox("", "El tablero no es valido");
+        }
     }
 
     private static void iniciarSiguienteTurno(){

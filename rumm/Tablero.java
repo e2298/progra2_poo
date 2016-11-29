@@ -4,6 +4,11 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 public class Tablero extends GridPane {
 
     public Tablero(){
@@ -57,30 +62,33 @@ public class Tablero extends GridPane {
             }
             //si esta en el tablero
             else {
-                getChildren().remove(Rummikub.getSeleccion());
                 //de tablero a tablero
                 if (getChildren().contains(campo)) {
+                    getChildren().remove(Rummikub.getSeleccion());
                     add(Rummikub.getSeleccion(), getColumnIndex(campo), getRowIndex(campo));
                     add(crearBotonVacio(columna, fila), columna, fila);
                 }
                 //de tablero a soporte
                 else{
-                    add(crearBotonVacio(columna, fila), columna, fila);
-                    columna = Rummikub.getSoporte().getColumnIndex(campo);
-                    Rummikub.getSoporte().add(Rummikub.getSeleccion(), columna ,0);
-                    Rummikub.getSoporte().getChildren().remove(campo);
+                    if (Rummikub.getJugadores()[Rummikub.getTurno()].getFichas().contains(Rummikub.getSeleccion())) {
+                        add(crearBotonVacio(columna, fila), columna, fila);
+                        getChildren().remove(Rummikub.getSeleccion());
+                        columna = Rummikub.getSoporte().getColumnIndex(campo);
+                        Rummikub.getSoporte().add(Rummikub.getSeleccion(), columna, 0);
+                        Rummikub.getSoporte().getChildren().remove(campo);
+                    }
                 }
             }
-
             getChildren().remove(campo);
         }
-        isValido();
     }
 
     public Boolean isValido(){
-        int reps;
+        ArrayList jugada = new ArrayList();
+        ArrayList jugadaColores = new ArrayList();
 
-        Ficha tmp;
+        double tmp;
+
         Ficha [][] tab = new Ficha[13][13];
 
         for (Node n : getChildren()){
@@ -95,10 +103,78 @@ public class Tablero extends GridPane {
 
         for (int fila = 0; fila<13; fila++){
             for (int columna = 0; columna<13; columna++){
-                try{
+                jugada.clear();
+                jugadaColores.clear();
+
+                //pone la "jugada"(un conjunto de fichas) en un arreglo
+                while(columna <13 && tab[fila][columna] != null){
+                    jugada.add(tab[fila][columna].getNumero());
+                    jugadaColores.add(tab[fila][columna].getColor().hashCode());
+                    columna ++;
                 }
-                catch (Exception e){
+
+                //si no habia una jugada en la linea
+                if (jugada.isEmpty()){
+                    continue;
                 }
+
+                //si no es de suficiente tamano
+                if (jugada.size()<3){
+                    return false;
+                }
+
+                tmp = 0;
+
+                //suma todos los contenidos de la jugada
+                for (Object i : jugada){
+                    tmp += (int) i;
+                }
+
+                //la suma de los elementos == primerElemento * (cantidadDeElementos-cantidadComodines)
+                //lo que significa que se repite el mismo numero (restarle las veces que aparece 0 hace que los comodines se acepten)
+                if ((int)jugada.get(0) !=0 && tmp == ((int) jugada.get(0)) * (jugada.size() - Collections.frequency(jugada, 0))) {
+                        continue;
+
+                }
+                else if (tmp == ((int) jugada.get(1)) * (jugada.size() - Collections.frequency(jugada, 0))) {
+                        continue;
+                }
+
+
+                //le resta los elementos que tendria la jugada si fuera una escalera a tmp
+                if ((int) jugada.get(0) != 0) {
+                    for (int i = (int) jugada.get(0); i < (int) jugada.get(0) + jugada.size(); i++) {
+                        tmp -= i;
+                    }
+                }
+                //si el primer elemeno era comodin empieza desde el fin
+                else{
+                    for (int i = (int) jugada.get(jugada.size()-1); i>= (int) jugada.get(jugada.size()-1)-jugada.size() ;i--){
+                        tmp-= i;
+                    }
+                }
+
+                //ya que tmp es la suma de los elementos, al restarle los correctos, va a ser zero ssi los elementos eran los correctos
+                if (tmp != 0){
+                    return false;
+                }
+
+                tmp = 0;
+
+                //suma los colores para revisarlo igual que repeticion
+                for (Object i : jugadaColores){
+                    tmp += (long) i;
+                }
+
+                //funciona igual que el de arriba pero este es con colores
+                if ((long)jugadaColores.get(0) != Color.BLACK.hashCode() && tmp == ((long) jugadaColores.get(0)) * (jugadaColores.size() - Collections.frequency(jugadaColores, Color.BLACK.hashCode()))) {
+                        continue;
+                }
+                else if (tmp == ((long) jugadaColores.get(1)) * (jugadaColores.size() - Collections.frequency(jugadaColores, Color.BLACK.hashCode()))) {
+                        continue;
+                }
+
+                return false;
             }
         }
         return true;
