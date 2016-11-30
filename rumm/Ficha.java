@@ -1,6 +1,6 @@
 package rumm;
 
-import javafx.event.EventHandler;
+
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 
@@ -9,6 +9,7 @@ public class Ficha  extends Button{
     //0 es comodin
     private int numero;
     private Color color;
+
 
 
     public int getNumero() {

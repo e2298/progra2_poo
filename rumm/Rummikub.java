@@ -20,19 +20,22 @@ import java.util.*;
 import static java.lang.System.exit;
 
 public class Rummikub extends Application {
-    private static Scene escenaPrincipal;
+
+        private static Scene escenaPrincipal;
     private static Stage escenarioPrincipal;
     private static Jugador[] jugadores;
     private static ArrayList fichasTablero;
+
     private static int numeroJugadores;
-    private static int turno;
+    private static int turno; //jugador en turno
     private static int numeroPartida;
-    private static int ancho, alto;
-    private static Ficha seleccion;
-    private static  GridPane soporte;
-    private static Tablero tablero;
+    private static int ancho, alto; //de la pantalla
+
+    private static Ficha seleccion; //ficha seleccionada
+    private static GridPane soporte; //soporte grafico
+    private static Tablero tablero; //tablero grafico y logico
     private static TablaPuntiaciones tablaPuntiaciones;
-    private static Text turnoTexto;
+    private static Text turnoTexto; //texto que dice quien esta en turno
 
 
     public static Text getTurnoTexto() {
@@ -148,11 +151,13 @@ public class Rummikub extends Application {
     }
 
     public static void main(String[] args) {
-        numeroPartida = 0;
 
+        //llama a start y inicia la aplicacion de javafx
         launch(args);
     }
 
+
+    //toma la entrada de numero de jugadores, al presionar el boton llama a tomarnumero de jugadores
     @Override
     public void start(Stage primaryStage) {
         escenarioPrincipal = primaryStage;
@@ -205,6 +210,7 @@ public class Rummikub extends Application {
                 new AlertBox("", "Deben de haber 2-4 jugadores");
             }
 
+            //inicia el juego si el numero era valido
             else{
                 setNumeroJugadores(numJugadores);
                 inicializarJuego();
@@ -218,34 +224,36 @@ public class Rummikub extends Application {
 
     }
 
-
+    //pone las variables iniciales del juego
     private static void inicializarJuego(){
 
         Jugador [] jugadores;
 
-        jugadores = new Jugador[getNumeroJugadores()];
+        setNumeroPartida(0);
 
+        //crea los jugadores
+        jugadores = new Jugador[getNumeroJugadores()];
         for (int i = 0; i<getNumeroJugadores(); i++){
             jugadores[i] = new Jugador();
         }
-
         setJugadores(jugadores);
 
         repartirFichas();
 
         inicializarPantalla();
-
     }
 
     private static void repartirFichas(){
         ArrayList temp;
         ArrayList fichas;
 
+        //si hay fichas en los jugadores las quita
         for (Object j : getJugadores()){
             ((Jugador)j).getFichas().clear();
         }
-        fichas = new ArrayList();
 
+        //genera las fichas
+        fichas = new ArrayList();
         for (int i = 1; i<14;i++){
             fichas.add( new Ficha(Color.BLUE, i));
             fichas.add( new Ficha(Color.BLUE, i));
@@ -255,25 +263,26 @@ public class Rummikub extends Application {
             fichas.add( new Ficha(Color.YELLOW, i));
             fichas.add( new Ficha(Color.GREEN, i));
             fichas.add( new Ficha(Color.GREEN, i));
-        }
-
+        } //comodines
         fichas.add( new Ficha(Color.BLACK, 0));
         fichas.add( new Ficha(Color.BLACK, 0));
 
-
+        //mezcla las fichas
         Collections.shuffle(fichas);
 
+        //agarra pedazos de 14 fichas y se los pasa a cada jugador
         for (int i = 0; i<getNumeroJugadores(); i++){
             temp = new ArrayList(fichas.subList(0,14));
             getJugadores()[i].ponerFichas(temp);
             fichas.removeAll(temp);
         }
 
+        //las fichas que sobran se las pone al tablero
         setFichasTablero(fichas);
-
     }
 
 
+    //pone todos los botones y textos donde van, llama a  iniciarRonda
     private static void inicializarPantalla(){
         Pane layout = new Pane();
         GridPane soporte;
@@ -316,8 +325,7 @@ public class Rummikub extends Application {
         layout.getChildren().add(botonTerminarRonda);
 
         turnoTexto = new Text();
-        turnoTexto.relocate(getAlto()*1.2, 25);
-        turnoTexto.relocate(getAlto()*1.2, 25);
+        turnoTexto.relocate(getAlto()*1.2, getAlto()/11);
         turnoTexto.setStyle("-fx-font:" + String.valueOf(Rummikub.getAlto() / 25) + " arial;");
         layout.getChildren().add(turnoTexto);
         setTurnoTexto(turnoTexto);
@@ -331,7 +339,7 @@ public class Rummikub extends Application {
         layout.getChildren().add(tab);
 
         punt = new TablaPuntiaciones();
-        punt.relocate(getAlto() * 0.95, getAlto() /13);
+        punt.relocate(getAlto() * 0.95, getAlto()/9);
         setTablaPuntiaciones(punt);
         layout.getChildren().add(punt);
 
@@ -346,16 +354,21 @@ public class Rummikub extends Application {
 
 
     private static void iniciarRonda(){
+        //elimina el tablero
         getTablero().getChildren().clear();
 
+        //vuelbe a construir las puntuaciones
         getTablaPuntiaciones().actualizar();
 
+        //aumenta el numero de partida
         setNumeroPartida(getNumeroPartida()+1);
 
+        //vuelbe a construir el tablero
         getTablero().iniciar();
 
         repartirFichas();
 
+        //pone el turno en -1, ya que iniciarsiguiente lo aumenta y lo deja en 0
         setTurno(-1);
 
         iniciarSiguienteTurno();
@@ -368,12 +381,14 @@ public class Rummikub extends Application {
         int ganador = 0;
         int puntos = 0;
 
+        //encuentra el que tiene menos fichas, si hay empate queda el primero
         for (int i = 0; i<getNumeroJugadores(); i++){
             if (getJugadores()[i].getFichas().size() < getJugadores()[ganador].getFichas().size()){
                 ganador = i;
             }
         }
 
+        //resta los puntos a los perdedores y los suma a los ganadores
         for (int i = 0; i<getNumeroJugadores(); i++){
             puntos = 0;
             if (i != ganador){
@@ -398,13 +413,15 @@ public class Rummikub extends Application {
 
     }
 
-    private static void iniciarSiguienteTurno(){
-        setTurno((getTurno() + 1)%getNumeroJugadores());
 
-        getSoporte().getChildren().clear();
+    private static void iniciarSiguienteTurno(){
+        //aumenta el numero de turno
+        setTurno((getTurno() + 1)%getNumeroJugadores());
 
         getTurnoTexto().setText("Turno de "+ String.valueOf(getTurno()+1));
 
+        //quita las fichas del jguador anterior y pone las nuevas
+        getSoporte().getChildren().clear();
         for (Object ficha: getJugadores()[getTurno()].getFichas()){
             getSoporte().add(((Ficha)ficha), getSoporte().getChildren().size(), 0);
         }
@@ -414,17 +431,21 @@ public class Rummikub extends Application {
     private static void terminarTurno() {
         AlertBox msj;
 
+        //si la partida esta en estado valido
         if (getTablero().isValido() && !getSoporte().getChildren().equals(getJugadores()[getTurno()].getFichas())){
+            //borra las fichas del jugador
             getJugadores()[getTurno()].getFichas().clear();
+            //le pone las fichas que estan en el soporte
             for (Node n: getSoporte().getChildren() ){
                 if (n instanceof Ficha){
                     getJugadores()[getTurno()].getFichas().add(n);
                 }
             }
-
             getSoporte().getChildren().clear();
+
             setSeleccion(null);
 
+            //si el jugador queda sin fichas termina la ronda
             if (getJugadores()[getTurno()].getFichas().isEmpty()){
                 terminarRonda();
             }
@@ -437,10 +458,13 @@ public class Rummikub extends Application {
             }
 
         }
+        //si la partida no esta en estado valido
         else{
+            //si es porque no jugo
             if (getSoporte().getChildren().equals(getJugadores()[getTurno()].getFichas())){
                 msj = new AlertBox("", "debe de jugar algo antes de pasar de turno");
             }
+            //si es porque hay una jugada mala
             else {
                 msj = new AlertBox("", "El tablero no es valido");
             }
@@ -450,14 +474,15 @@ public class Rummikub extends Application {
 
 
     private static void comer(){
+        //si no quedan fichas que comer
         if (getFichasTablero().isEmpty()){
             new AlertBox("", "No quedan fichas");
         }
         else {
+            //anade una ficha
             getSoporte().add((Ficha) getFichasTablero().get(0), getSoporte().getChildren().size(), 0);
+            //la quita del tablero
             getFichasTablero().remove(getFichasTablero().get(0));
         }
     }
-
-
 }

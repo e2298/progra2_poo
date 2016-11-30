@@ -4,23 +4,21 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
-import static javafx.scene.input.KeyCode.L;
 
 public class Tablero extends GridPane {
 
     public Tablero(){
         super();
-
     }
 
+    //boton sin texto que mueve una ficha seleccionada a su posicion
     private Button crearBotonVacio(int columna, int fila){
         final Button tmp = new Button();
 
+        //le pone el tamano
         tmp.setMinWidth(Rummikub.getAlto()/15);
         tmp.setMinHeight(Rummikub.getAlto()/15);
         tmp.setMaxWidth(Rummikub.getAlto()/15);
@@ -34,7 +32,6 @@ public class Tablero extends GridPane {
 
     private void moverCampo(Button campo){
         if (Rummikub.getSeleccion()!= null) {
-
             int columna = getColumnIndex(Rummikub.getSeleccion());
             int fila = getRowIndex(Rummikub.getSeleccion());
 
@@ -74,10 +71,12 @@ public class Tablero extends GridPane {
                     }
                 }
             }
+            //elimina el boton
             getChildren().remove(campo);
         }
     }
 
+    //se llena con botones
     public void iniciar(){
         Button tmp;
 
@@ -88,14 +87,18 @@ public class Tablero extends GridPane {
         }
     }
 
+    //true si todas las jugadas son legales, false si no
     public Boolean isValido(){
+        //numeros de una "jugada" (fichas que estan juntas)
         ArrayList jugada = new ArrayList();
+        //hash de los colores de una jugada
         ArrayList jugadaColores = new ArrayList();
 
         double tmp;
 
         Ficha [][] tab = new Ficha[13][13];
 
+        //construye una matriz con las fichas
         for (Node n : getChildren()){
             try{
                 //para que de excepcion si no es ficha
@@ -106,6 +109,7 @@ public class Tablero extends GridPane {
             }
         }
 
+        //recorre la matriz
         for (int fila = 0; fila<13; fila++){
             for (int columna = 0; columna<13; columna++){
                 jugada.clear();
@@ -139,8 +143,8 @@ public class Tablero extends GridPane {
                 //lo que significa que se repite el mismo numero (restarle las veces que aparece 0 hace que los comodines se acepten)
                 if ((int)jugada.get(0) !=0 && tmp == ((int) jugada.get(0)) * (jugada.size() - Collections.frequency(jugada, 0))) {
                         continue;
-
                 }
+                //si el primer elemento es comodin lo compara con el ultimo
                 else if (tmp == ((int) jugada.get(2)) * (jugada.size() - Collections.frequency(jugada, 0))) {
                     continue;
                 }

@@ -1,9 +1,5 @@
 package rumm;
 
-import javafx.scene.control.Button;
-import javafx.scene.input.GestureEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import java.util.ArrayList;
 
 public class Jugador {
@@ -41,7 +37,4 @@ public class Jugador {
         getFichas().add(ficha);
     }
 
-    public void quitarFicha(Ficha ficha){
-        getFichas().remove(ficha);
-    }
 }
