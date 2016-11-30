@@ -32,7 +32,16 @@ public class Rummikub extends Application {
     private static  GridPane soporte;
     private static Tablero tablero;
     private static TablaPuntiaciones tablaPuntiaciones;
+    private static Text turnoTexto;
 
+
+    public static Text getTurnoTexto() {
+        return turnoTexto;
+    }
+
+    public static void setTurnoTexto(Text turnoTexto) {
+        Rummikub.turnoTexto = turnoTexto;
+    }
 
     public static TablaPuntiaciones getTablaPuntiaciones() {
         return tablaPuntiaciones;
@@ -276,6 +285,8 @@ public class Rummikub extends Application {
         Button botonComer;
         Button botonTerminarRonda;
 
+        Text turnoTexto;
+
         botonSalir= new Button("Salir");
         botonSalir.setOnAction(e->{
             new VentanaSalir();
@@ -304,6 +315,13 @@ public class Rummikub extends Application {
         botonTerminarRonda.relocate(getAncho()-121, 2);
         layout.getChildren().add(botonTerminarRonda);
 
+        turnoTexto = new Text();
+        turnoTexto.relocate(getAlto()*1.2, 25);
+        turnoTexto.relocate(getAlto()*1.2, 25);
+        turnoTexto.setStyle("-fx-font:" + String.valueOf(Rummikub.getAlto() / 25) + " arial;");
+        layout.getChildren().add(turnoTexto);
+        setTurnoTexto(turnoTexto);
+
         soporte = new GridPane();
         layout.getChildren().add(soporte);
         setSoporte(soporte);
@@ -313,7 +331,7 @@ public class Rummikub extends Application {
         layout.getChildren().add(tab);
 
         punt = new TablaPuntiaciones();
-        punt.relocate(getAlto(), getAlto() /14);
+        punt.relocate(getAlto() * 0.95, getAlto() /13);
         setTablaPuntiaciones(punt);
         layout.getChildren().add(punt);
 
@@ -338,7 +356,7 @@ public class Rummikub extends Application {
 
         repartirFichas();
 
-        setTurno(0);
+        setTurno(-1);
 
         iniciarSiguienteTurno();
     }
@@ -385,6 +403,8 @@ public class Rummikub extends Application {
 
         getSoporte().getChildren().clear();
 
+        getTurnoTexto().setText("Turno de "+ String.valueOf(getTurno()+1));
+
         for (Object ficha: getJugadores()[getTurno()].getFichas()){
             getSoporte().add(((Ficha)ficha), getSoporte().getChildren().size(), 0);
         }
@@ -395,12 +415,6 @@ public class Rummikub extends Application {
         AlertBox msj;
 
         if (getTablero().isValido() && !getSoporte().getChildren().equals(getJugadores()[getTurno()].getFichas())){
-            msj = new AlertBox("", "Siguente turno");
-            msj.getBoton().setOnAction(event -> {
-                iniciarSiguienteTurno();
-                msj.cerrar();
-            });
-
             getJugadores()[getTurno()].getFichas().clear();
             for (Node n: getSoporte().getChildren() ){
                 if (n instanceof Ficha){
@@ -410,6 +424,18 @@ public class Rummikub extends Application {
 
             getSoporte().getChildren().clear();
             setSeleccion(null);
+
+            if (getJugadores()[getTurno()].getFichas().isEmpty()){
+                terminarRonda();
+            }
+            else {
+                msj = new AlertBox("", "Siguente turno");
+                msj.getBoton().setOnAction(event -> {
+                    iniciarSiguienteTurno();
+                    msj.cerrar();
+                });
+            }
+
         }
         else{
             if (getSoporte().getChildren().equals(getJugadores()[getTurno()].getFichas())){
