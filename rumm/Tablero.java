@@ -16,13 +16,6 @@ public class Tablero extends GridPane {
     public Tablero(){
         super();
 
-        Button tmp;
-
-        for (int i1 = 0; i1<13; i1++){
-            for(int i2 = 0; i2<13; i2++){
-                add(crearBotonVacio(i1, i2), i1, i2);
-            }
-        }
     }
 
     private Button crearBotonVacio(int columna, int fila){
@@ -82,6 +75,16 @@ public class Tablero extends GridPane {
                 }
             }
             getChildren().remove(campo);
+        }
+    }
+
+    public void iniciar(){
+        Button tmp;
+
+        for (int i1 = 0; i1<13; i1++){
+            for(int i2 = 0; i2<13; i2++){
+                add(crearBotonVacio(i1, i2), i1, i2);
+            }
         }
     }
 

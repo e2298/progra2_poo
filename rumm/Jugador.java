@@ -27,9 +27,11 @@ public class Jugador {
         this.puntos = puntos;
     }
 
-    public Jugador(ArrayList fichas) {
+    public Jugador() {
         setFichas(new ArrayList());
+    }
 
+    public void ponerFichas(ArrayList fichas){
         for(Object ficha: fichas){
             anadirFicha((Ficha)ficha);
         }

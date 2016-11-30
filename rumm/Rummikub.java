@@ -210,13 +210,31 @@ public class Rummikub extends Application {
     }
 
 
-
     private static void inicializarJuego(){
-        ArrayList fichas;
-        ArrayList temp;
 
         Jugador [] jugadores;
 
+        jugadores = new Jugador[getNumeroJugadores()];
+
+        for (int i = 0; i<getNumeroJugadores(); i++){
+            jugadores[i] = new Jugador();
+        }
+
+        setJugadores(jugadores);
+
+        repartirFichas();
+
+        inicializarPantalla();
+
+    }
+
+    private static void repartirFichas(){
+        ArrayList temp;
+        ArrayList fichas;
+
+        for (Object j : getJugadores()){
+            ((Jugador)j).getFichas().clear();
+        }
         fichas = new ArrayList();
 
         for (int i = 1; i<14;i++){
@@ -236,19 +254,13 @@ public class Rummikub extends Application {
 
         Collections.shuffle(fichas);
 
-
-        jugadores = new Jugador[getNumeroJugadores()];
-
         for (int i = 0; i<getNumeroJugadores(); i++){
             temp = new ArrayList(fichas.subList(0,14));
-            jugadores[i] = new Jugador(temp);
+            getJugadores()[i].ponerFichas(temp);
             fichas.removeAll(temp);
         }
 
         setFichasTablero(fichas);
-        setJugadores(jugadores);
-
-        inicializarPantalla();
 
     }
 
@@ -262,6 +274,7 @@ public class Rummikub extends Application {
         Button botonSalir;
         Button botonTerminarTurno;
         Button botonComer;
+        Button botonTerminarRonda;
 
         botonSalir= new Button("Salir");
         botonSalir.setOnAction(e->{
@@ -283,6 +296,13 @@ public class Rummikub extends Application {
         });
         botonComer.relocate(1, getAlto()-65);
         layout.getChildren().add(botonComer);
+
+        botonTerminarRonda = new Button("Terminar ronda");
+        botonTerminarRonda.setOnAction(event -> {
+            terminarRonda();
+        });
+        botonTerminarRonda.relocate(getAncho()-121, 2);
+        layout.getChildren().add(botonTerminarRonda);
 
         soporte = new GridPane();
         layout.getChildren().add(soporte);
@@ -308,21 +328,63 @@ public class Rummikub extends Application {
 
 
     private static void iniciarRonda(){
+        getTablero().getChildren().clear();
+
         getTablaPuntiaciones().actualizar();
 
         setNumeroPartida(getNumeroPartida()+1);
 
+        getTablero().iniciar();
+
+        repartirFichas();
+
+        setTurno(0);
 
         iniciarSiguienteTurno();
     }
 
 
     private static void terminarRonda(){
+        AlertBox msj;
+
+        int ganador = 0;
+        int puntos = 0;
+
+        for (int i = 0; i<getNumeroJugadores(); i++){
+            if (getJugadores()[i].getFichas().size() < getJugadores()[ganador].getFichas().size()){
+                ganador = i;
+            }
+        }
+
+        for (int i = 0; i<getNumeroJugadores(); i++){
+            puntos = 0;
+            if (i != ganador){
+                for (Object f : getJugadores()[i].getFichas()){
+                    if (((Ficha)f).getNumero() != 0){
+                        puntos += ((Ficha)f).getNumero();
+                    }
+                    else{
+                        puntos += 30;
+                    }
+                }
+            }
+            getJugadores()[i].setPuntos(getJugadores()[i].getPuntos() - puntos);
+            getJugadores()[ganador].setPuntos(getJugadores()[ganador].getPuntos() + puntos);
+        }
+
+        msj = new AlertBox("", "Fin de la ronda " + String.valueOf(getNumeroPartida()) + "\nGanador: " + String.valueOf(ganador + 1));
+        msj.getBoton().setOnAction(event -> {
+            msj.cerrar();
+            iniciarRonda();
+        });
 
     }
 
     private static void iniciarSiguienteTurno(){
         setTurno((getTurno() + 1)%getNumeroJugadores());
+
+        getSoporte().getChildren().clear();
+
         for (Object ficha: getJugadores()[getTurno()].getFichas()){
             getSoporte().add(((Ficha)ficha), getSoporte().getChildren().size(), 0);
         }
