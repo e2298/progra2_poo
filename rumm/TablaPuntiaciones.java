@@ -10,11 +10,11 @@ public class TablaPuntiaciones extends GridPane {
     private ArrayList<Integer>[] punttuaciones;
 
 
-    public ArrayList<Integer>[] getPunttuaciones() {
+    private ArrayList<Integer>[] getPunttuaciones() {
         return punttuaciones;
     }
 
-    public void setPunttuaciones(ArrayList<Integer>[] punttuaciones) {
+    private void setPunttuaciones(ArrayList<Integer>[] punttuaciones) {
         this.punttuaciones = punttuaciones;
     }
 

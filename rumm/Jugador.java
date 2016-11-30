@@ -33,7 +33,7 @@ public class Jugador {
         }
     }
 
-    public void anadirFicha(Ficha ficha){
+    private void anadirFicha(Ficha ficha){
         getFichas().add(ficha);
     }
 

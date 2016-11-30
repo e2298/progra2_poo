@@ -21,7 +21,7 @@ import static java.lang.System.exit;
 
 public class Rummikub extends Application {
 
-        private static Scene escenaPrincipal;
+    private static Scene escenaPrincipal;
     private static Stage escenarioPrincipal;
     private static Jugador[] jugadores;
     private static ArrayList fichasTablero;
