@@ -31,7 +31,16 @@ public class Rummikub extends Application {
     private static Ficha seleccion;
     private static  GridPane soporte;
     private static Tablero tablero;
+    private static TablaPuntiaciones tablaPuntiaciones;
 
+
+    public static TablaPuntiaciones getTablaPuntiaciones() {
+        return tablaPuntiaciones;
+    }
+
+    public static void setTablaPuntiaciones(TablaPuntiaciones tablaPuntiaciones) {
+        Rummikub.tablaPuntiaciones = tablaPuntiaciones;
+    }
 
     public static Tablero getTablero() {
         return tablero;
@@ -248,9 +257,11 @@ public class Rummikub extends Application {
         Pane layout = new Pane();
         GridPane soporte;
         Tablero tab;
+        TablaPuntiaciones punt;
 
         Button botonSalir;
         Button botonTerminarTurno;
+        Button botonComer;
 
         botonSalir= new Button("Salir");
         botonSalir.setOnAction(e->{
@@ -263,8 +274,15 @@ public class Rummikub extends Application {
         botonTerminarTurno.setOnAction(event -> {
             terminarTurno();
         });
-        botonTerminarTurno.relocate(getAncho()-117,1);
+        botonTerminarTurno.relocate(1,getAlto()-33);
         layout.getChildren().add(botonTerminarTurno);
+
+        botonComer = new Button("Comer");
+        botonComer.setOnAction(event -> {
+            comer();
+        });
+        botonComer.relocate(1, getAlto()-65);
+        layout.getChildren().add(botonComer);
 
         soporte = new GridPane();
         layout.getChildren().add(soporte);
@@ -274,19 +292,47 @@ public class Rummikub extends Application {
         tab.relocate(0, getAlto()/14);
         layout.getChildren().add(tab);
 
+        punt = new TablaPuntiaciones();
+        punt.relocate(getAlto(), getAlto() /14);
+        setTablaPuntiaciones(punt);
+        layout.getChildren().add(punt);
+
         setTablero(tab);
 
         setEscenaPrincipal(new Scene(layout, 0, 0));
         getEscenarioPrincipal().setScene(getEscenaPrincipal());
         getEscenarioPrincipal().setFullScreen(true);
 
+        iniciarRonda();
+    }
+
+
+    private static void iniciarRonda(){
+        getTablaPuntiaciones().actualizar();
+
+        setNumeroPartida(getNumeroPartida()+1);
+
+
         iniciarSiguienteTurno();
     }
+
+
+    private static void terminarRonda(){
+
+    }
+
+    private static void iniciarSiguienteTurno(){
+        setTurno((getTurno() + 1)%getNumeroJugadores());
+        for (Object ficha: getJugadores()[getTurno()].getFichas()){
+            getSoporte().add(((Ficha)ficha), getSoporte().getChildren().size(), 0);
+        }
+    }
+
 
     private static void terminarTurno() {
         AlertBox msj;
 
-        if (getTablero().isValido()){
+        if (getTablero().isValido() && !getSoporte().getChildren().equals(getJugadores()[getTurno()].getFichas())){
             msj = new AlertBox("", "Siguente turno");
             msj.getBoton().setOnAction(event -> {
                 iniciarSiguienteTurno();
@@ -304,14 +350,24 @@ public class Rummikub extends Application {
             setSeleccion(null);
         }
         else{
-            msj = new AlertBox("", "El tablero no es valido");
+            if (getSoporte().getChildren().equals(getJugadores()[getTurno()].getFichas())){
+                msj = new AlertBox("", "debe de jugar algo antes de pasar de turno");
+            }
+            else {
+                msj = new AlertBox("", "El tablero no es valido");
+            }
         }
     }
 
-    private static void iniciarSiguienteTurno(){
-        setTurno((getTurno() + 1)%getNumeroJugadores());
-        for (Object ficha: getJugadores()[getTurno()].getFichas()){
-            getSoporte().add(((Ficha)ficha), getSoporte().getChildren().size(), 0);
+
+
+    private static void comer(){
+        if (getFichasTablero().isEmpty()){
+            new AlertBox("", "No quedan fichas");
+        }
+        else {
+            getSoporte().add((Ficha) getFichasTablero().get(0), getSoporte().getChildren().size(), 0);
+            getFichasTablero().remove(getFichasTablero().get(0));
         }
     }
 
