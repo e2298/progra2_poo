@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import static javafx.scene.input.KeyCode.L;
+
 public class Tablero extends GridPane {
 
     public Tablero(){
@@ -109,7 +111,7 @@ public class Tablero extends GridPane {
                 //pone la "jugada"(un conjunto de fichas) en un arreglo
                 while(columna <13 && tab[fila][columna] != null){
                     jugada.add(tab[fila][columna].getNumero());
-                    jugadaColores.add(tab[fila][columna].getColor().hashCode());
+                    jugadaColores.add(new Long(tab[fila][columna].getColor().hashCode()));
                     columna ++;
                 }
 
@@ -136,27 +138,38 @@ public class Tablero extends GridPane {
                         continue;
 
                 }
-                else if (tmp == ((int) jugada.get(1)) * (jugada.size() - Collections.frequency(jugada, 0))) {
-                        continue;
+                else if (tmp == ((int) jugada.get(2)) * (jugada.size() - Collections.frequency(jugada, 0))) {
+                    continue;
                 }
-
 
                 //le resta los elementos que tendria la jugada si fuera una escalera a tmp
                 if ((int) jugada.get(0) != 0) {
                     for (int i = (int) jugada.get(0); i < (int) jugada.get(0) + jugada.size(); i++) {
-                        tmp -= i;
-                    }
-                }
-                //si el primer elemeno era comodin empieza desde el fin
-                else{
-                    for (int i = (int) jugada.get(jugada.size()-1); i>= (int) jugada.get(jugada.size()-1)-jugada.size() ;i--){
-                        tmp-= i;
-                    }
-                }
 
-                //ya que tmp es la suma de los elementos, al restarle los correctos, va a ser zero ssi los elementos eran los correctos
-                if (tmp != 0){
-                    return false;
+                        if (jugada.contains(i)){
+                            continue;
+                        }
+                        if (jugada.contains(0)){
+                            jugada.set(jugada.indexOf(0), i);
+                        }
+                        else{
+                            return false;
+                        }
+                    }
+                }
+                //si el primer elemento era comodin empieza desde el fin
+                else{
+                    for (int i = (int) jugada.get(jugada.size()-1); i> (int) jugada.get(jugada.size()-1)-jugada.size() ;i--){
+                        if (jugada.contains(i)){
+                            continue;
+                        }
+                        if (jugada.contains(0)){
+                            jugada.set(jugada.indexOf(0), i);
+                        }
+                        else{
+                            return false;
+                        }
+                    }
                 }
 
                 tmp = 0;
@@ -164,13 +177,14 @@ public class Tablero extends GridPane {
                 //suma los colores para revisarlo igual que repeticion
                 for (Object i : jugadaColores){
                     tmp += (long) i;
-                }
+                 }
 
                 //funciona igual que el de arriba pero este es con colores
-                if ((long)jugadaColores.get(0) != Color.BLACK.hashCode() && tmp == ((long) jugadaColores.get(0)) * (jugadaColores.size() - Collections.frequency(jugadaColores, Color.BLACK.hashCode()))) {
+                if ((long)jugadaColores.get(0) != new Long(255) &&
+                        tmp == ((long) jugadaColores.get(0)) * (jugadaColores.size() - Collections.frequency(jugadaColores, new Long(255))) + 255 * Collections.frequency(jugadaColores, new Long(255)) ) {
                         continue;
                 }
-                else if (tmp == ((long) jugadaColores.get(1)) * (jugadaColores.size() - Collections.frequency(jugadaColores, Color.BLACK.hashCode()))) {
+                else if (tmp == ((long) jugadaColores.get(1)) * (jugadaColores.size() - Collections.frequency(jugadaColores, new Long(255))) + 255 * Collections.frequency(jugadaColores, new Long(255))) {
                         continue;
                 }
 
